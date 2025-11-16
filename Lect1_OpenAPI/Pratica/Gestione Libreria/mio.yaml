@@ -1,0 +1,156 @@
+swagger: '2.0'
+info:
+  title: 'Gestione Libreria'
+  description: 'API per gestire una Libreria'
+  version: 1.0.0
+definitions:
+  Libro:
+    type: object
+    required:
+      - id
+      - titolo
+      - genere
+      - numPagine
+      - valutazione
+    properties:
+      id:
+        type: integer
+        example: 1
+      titolo:
+        type: string
+        example: 'Sposi'
+      genere:
+        type: string
+        enum: ['Romanzo','Giallo','Fantascienza','Saggistica','Biografia']
+        example: 'Romanzo'
+      numPagine:
+        type: integer
+        example: 123
+      valutazione:
+        type: number
+        minimum: 0.0
+        maximum: 5.0
+        example: 4.5
+    
+  LibroUpdate:
+    type: object
+    required:
+      - numPagine
+      - valutazione
+    properties:
+        numPagine:
+          type: integer
+          example: 222
+          description: 'Nuovo numero di pagine'
+        valutazione:
+          type: number
+          minimum: 0.0
+          maximum: 5.0
+          example: 4.3
+          description: 'Nuova valutazione'
+  ListaLibri:
+    type: object
+    required:
+      - libri
+    properties:
+      libri:
+        type: array
+        items:
+          $ref: '#/definitions/Libro'
+
+paths:
+  /libri:
+    get:
+      summary: 'Ottieni l elenco di tutti i libri dato un genere con valutazione superiore a un valore minimo specificato'
+      operationId: 'elencoLibri'
+      #in questo caso ho due vincoli di ricerca li metto entrambi
+      parameters:
+          - name: genere
+            in: query
+            description: 'Genere dei libri da cercare'
+            required: true
+            type: string
+            enum: ['Romanzo','Giallo','Fantascienza','Saggistica','Biografia']
+          
+          - name: minRating
+            in: query
+            description: 'Valutazione minima richiesta'
+            required: true
+            type: number
+            minimum: 0.0
+            maximum: 5.0
+        
+      responses:
+        '200':
+          description: 'Elenco dei libri trovati'
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Libro'
+        '400':
+          description: 'errore'
+
+            
+    post:
+      summary: 'Aggiungere un insieme di libri e le relative informazioni, deve essere possibile aggiungere anche più di un libro con un unica richiesta'
+      operationId: 'aggiungiLibro'
+      parameters:
+            - name: body
+              in: body
+              description: 'Lista dei libri da aggiungere'
+              required: true
+              schema:
+                $ref: '#/definitions/ListaLibri'
+              
+      responses:
+        '201':
+          description: 'successo'
+          schema: 
+            type: array
+            items:
+              $ref: '#/definitions/Libro'          
+            examples:
+                application/json:
+                  - id: 3
+                    titolo: '1992'
+                    genere: 'Romanzo'
+                    numPagine: 3321
+                    valutazione: 3.2
+                  - id: 32
+                    titolo: '1392'
+                    genere: 'Romanzo'
+                    numPagine: 321
+                    valutazione: 2.2
+                  
+
+  /libri/{libroId}:
+    put:
+      summary: 'Modificare il numero di pagine e la valutazione di un libro esistente'
+      operationId: 'modificaPagine'
+      parameters:
+          - name: libroId
+            in: path
+            description: 'id di un libro'
+            required: true
+            type: integer
+          # dopo che ho identificato l'elemento modifico il numero di pag e valutazione
+          - name: body
+            in: body
+            required: true
+            schema:
+              $ref: '#/definitions/LibroUpdate'
+      responses:
+        '200':
+          description: 'Successo'
+          schema:
+              $ref: '#/definitions/Libro'
+          examples:
+            application/json:
+                id: 1
+                titolo: 'Sposi'
+                genere: 'Romanzo'
+                numPagine: 2211
+                valutazione: 2.0
+        '400':
+          description: 'errore'
+                
