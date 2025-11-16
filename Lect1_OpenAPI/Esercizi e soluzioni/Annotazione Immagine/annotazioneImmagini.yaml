@@ -1,0 +1,133 @@
+swagger: '2.0'
+info:
+  description: 'API gestione immagini e tag (annotazioni)'
+  title: 'Esercizio immagini & tags'
+  version: 1.0.0
+
+paths:
+  /images/:
+    get:
+      summary: 'ritorna elenco immagini per categoria'
+      operationId: 'listaImmaginiPerCategoria'
+      parameters:
+      - name: category
+        in: query
+        description: "Categoria dell'immagine (pittura, pubblicita, fotografia)"
+        required: true
+        type: string
+        enum: [pittura, pubblicita, fotografia]
+      responses:
+        '200':
+          description: 'successo'
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Image'
+        '400':
+          description: 'errore richiesta'
+
+  /images/{imageId}/tags/:
+    get:
+      summary: 'ritorna i tag associati a una immagine'
+      operationId: 'listaTagPerImmagine'
+      parameters:
+      - name: imageId
+        in: path
+        description: "ID dell'immagine"
+        required: true
+        type: string
+      responses:
+        '200':
+          description: 'successo'
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Tag'
+        '400':
+          description: 'ID non valido o immagine inesistente'
+
+  /images/{imageId}/aggiuntaTag/:
+    post:
+      summary: 'aggiunge un tag esistente a una immagine'
+      operationId: 'aggiungiTag'
+      # Si utilizza POST (e non PUT) perché questa operazione
+      # non aggiorna o sostituisce una risorsa esistente,
+      # ma crea una nuova relazione tra due risorse già presenti:
+      # - l'immagine identificata da imageId
+      # - il tag identificato da tagId
+      # In termini REST, "aggiungere un elemento a una collezione"
+      # o "creare un'associazione" è un'azione non idempotente,
+      # quindi deve essere gestita tramite POST.
+      # (Se invece volessimo sostituire l'intera lista di tag
+      # associati all'immagine, useremmo PUT /images/{imageId}/tags)
+
+      parameters:
+      - name: imageId
+        in: path
+        description: "ID dell'immagine"
+        required: true
+        type: string
+
+      # Questo parametro (sotto) rappresenta il corpo (body) della richiesta HTTP POST.
+      # Serve per dire al backend quale tag esistente si vuole aggiungere all'immagine (identificata da imageId).
+      # Il client invia un JSON con la proprietà "tagId", che contiene l'identificatore del tag.
+      # Esempio di richiesta:
+      # POST /images/IMG123/aggiuntaTag/
+      # { "tagId": "t-impressionismo" }
+      # Così, all'immagine con id "IMG123" verrà aggiunto il tag con id "t-impressionismo" (operazione gestita in backend).
+      - name: tagId
+        in: body
+        description: 'ID del tag da aggiungere'
+        required: true
+        schema:
+          type: object
+          required:
+            - tagId
+          properties:
+            tagId:
+              type: string
+              description: 'ID del tag esistente da associare'
+
+      responses:
+        '200':
+          description: 'successo'
+          schema:
+            $ref: '#/definitions/Tag'
+        '400':
+          description: 'errore (tag inesistente o input non valido)'
+
+definitions:
+  Image:
+    type: object
+    required:
+      - id
+      - url
+      - category
+      - tags
+    properties:
+      id:
+        type: string
+      url:
+        type: string
+      category:
+        type: string
+        enum: [pittura, pubblicita, fotografia]
+      tags:
+        type: array
+        items:
+          $ref: '#/definitions/Tag'
+
+  Tag:
+    type: object
+    required:
+      - id
+      - name
+      - score
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      score:
+        type: integer
+        enum: [1, 2, 3]
