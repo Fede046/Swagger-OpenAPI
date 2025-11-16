@@ -1,0 +1,163 @@
+swagger: "2.0"
+info:
+  title: "Giochi API"
+  description: "Gestioni di Giochi"
+  version: 1.0.0
+#definisco la struttura dati che userò
+definitions:
+  #Oggetti complessi
+  Gioco:
+    type: object
+    required:
+      - id
+      - nome
+      - categoria
+      - minPlayers
+      - maxPlayers
+    properties:
+      id:
+        type: integer
+      nome:
+        type: string
+      categoria:
+        type: string
+        enum: ["Shooter", "Adventure", "Puzzle", "Sport"]
+      minPlayers:
+        type: integer
+        example: 1
+      maxPlayers:
+        type: integer
+        example: 100
+  GameUpdate:
+    type: object
+    required:
+      - minPlayers
+      - maxPlayers
+    properties:
+      minPlayers:
+        type: integer
+        example: 2
+        description: "Nuovo numero minimo di giocatori"
+      maxPlayers:
+        type: integer
+        example: 1000
+  GameList:
+    type: object
+    required:
+      - games
+    properties:
+      games:
+        type: array
+        items:
+          $ref: "#/definitions/Gioco"
+paths:
+  #voglio filtrare dei gioci e non delle categorie
+  /games:
+    get:
+      summary: "ritorna l'elenco di tutti i giochi di una categoria"
+      operationId: "listaDiCategoria"
+      parameters:
+        #name -> filtro -> bisogna mettere categoria
+        - name: categoria
+          #query parameters -> Filtrano/riecercano risorse
+          #Vanno dopo il ? /games/?category=Shooter
+          in: query
+          description: "titoli della categoria"
+          required: true
+          type: string
+      responses:
+        "200":
+          description: "successo"
+          schema:
+            #quando definisco un array devo specificare items: per dire cpsa contiene l'array
+            type: array
+            items:
+              $ref: "#/definitions/Gioco"
+          examples:
+            application/json:
+              - id: 1
+                nome: "Call of Duty"
+                categoria: "Shooter"
+                minPlayer: 1
+                maxPlayers: 23
+              - id: 2
+                nome: "Halo"
+                categoria: "Shooter"
+                minPlayer: 1
+                maxPlayers: 33
+        "400":
+          description: "errore"
+    post:
+      summary: "aggiungere un insieme di giochi e le relative informazioni, è possibile quindi aggiungere anche un gioco con un unica richiesta"
+      operationId: "aggiungiGame"
+      parameters:
+        - name: body
+          in: body
+          description: "Lista di giochi da aggiungere ai parametri"
+          required: true
+          schema:
+            $ref: "#/definitions/GameList"
+      responses:
+        #quando crei nuove risorse il codice corretto è 201 (created) non 200 (ok)
+        "201":
+          description: "successo"
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Gioco"
+          examples:
+            application/json:
+              - id: 3
+                nome: "Fifa 23"
+                categoria: "Sport"
+                minPlayers: 1
+                maxPlayers: 4
+              - id: 4
+                nome: "NBA 2K20"
+                categoria: "Sport"
+                minPlayers: 1
+                maxPlayers: 22
+        "400":
+          description: "errore"
+
+  #le greffe servono per idndicare una risora specifica
+  #Per parametri obbligatori che identificano una identità
+  #Lo slash alla fine è una scelta di stile, non correlata col tipo di
+  # risorsa (l'IA consiglia di non metterlo)
+  /games/{gameId}:
+    put:
+      summary: "modificare il numero massimo di giocatori"
+      operationId: "aggiornaGiocatori"
+      parameters:
+        - name: gameId
+          #Path Parameters -> Identificano risorse, sono parte del percorso
+          in: path
+          description: "id di un gioco"
+          required: true
+          type: integer
+        #dopo che ho identificato un elemento attraverso una path,
+        #creo il body della richiesta
+        #senza body -> il server riceve solo l'ID -> Non sa che valori mettere
+        - name: body
+          in: body #dati da inviare
+          required: true
+          schema:
+            $ref: "#/definitions/GameUpdate"
+
+      responses:
+        #Stiamo modificando gioco non giocoupdate
+        #Quando modifico un gioco, il server doverebbe ritornare il gioco,
+        #copletemente aggiornato
+        "200":
+          description: "successo"
+          schema:
+            $ref: "#/definitions/Gioco"
+          examples:
+            application/json:
+              - id: 1
+                nome: "Call of Duty"
+                categoria: "Shooter"
+                minPlayers: 4
+                maxPlayers: 444
+        "400":
+          description: "errore"
