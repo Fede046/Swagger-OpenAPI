@@ -1,0 +1,115 @@
+swagger: '2.0'
+info:
+  title: 'Nome della API'
+  description: 'Breve descrizione di cosa fa'
+  version: 1.0.0
+#definisco la struttura dati che userò
+definitions:
+  #Oggetti semplici
+  Tag:
+    type: object
+    required:     #campi obbligatori
+      - id
+      - name
+      - score
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      score:
+        type: integer
+        enum: [1,2,3] #solo questi valori sono permessi
+  #Oggetti complessi
+  Image:
+    type: object
+    required:
+      - id
+      - url
+      - category
+      - tags
+    properties:
+      id:
+        type: string
+      url:
+        type: string
+      category:
+        type: string
+        enum: [pittura,pubblicità,fotografia]
+      tags:
+        type: array
+        items:
+          $ref: '#/definitions/Tag' #Riferimentoo al Tag definito sopra
+
+  # Tipi di dato disponibili
+  # string, integer, number, boolean, array, object
+  # enum: per limitare i valori possibili
+
+  #Definisco i processi paths della API:
+  #paths:
+  #  /images/:
+  #    get:
+  #      summary: 'breve descrizione'
+  #      operationId: 'nomeUnivocoOOperazione'
+  #      parametri e risposte
+  # GET -> ottenere dati
+  # POST -> creare nuove risorse
+  # PUT -> aggiornare risorse esistenti (sostituire)
+  # PATCH -> modificare parzialemente
+  # DELETE -> eliminare
+
+paths:
+ /images/:
+  get:
+    summary: 'ritorna elenco immagini per categoria'
+    operationId: 'listaImmaginiPerCategoria'
+    parameters:
+      - name: category          #nome del parametro
+        in: query               #Tipo: query, path,body, header
+        description: "Categoria dell'immagine"
+        required: true          #Obbligatorio??
+        type: string
+        enum: [pittura, pubblicità, forografia]
+    responses:
+      '200':
+        description: 'successo'
+        schema:
+          type: array           #Ritorna un array
+          items:
+            $ref: '#/definitions/Image'
+      '400':
+        description: 'errore richiesta'
+ /images/{imageId}/aggiuntaTag/:
+  post:
+    summary: 'aggiungi un tag esistente a un immagine'
+    operationId: 'aggiungiTag'
+    parameters:
+    - name: imageId
+      in: path
+      description: "Id dell'immagine"
+      required: true
+      type: string
+    
+    - name: tagId               #parametro del body
+      in: body
+      description: 'ID del tag da aggiungere'
+      required: true
+      schema:
+        type: object
+        required:
+          - tagId
+        properties:
+          tagId:
+            type: string
+            description: 'ID del tag esistenete da associare'
+    
+    responses:
+      '200':
+        description: 'successo'
+        schema:
+          $ref: '#/definitions/Tag'
+      '400':
+        description: 'errore'
+
+
+      
