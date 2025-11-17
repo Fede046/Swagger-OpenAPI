@@ -1,0 +1,149 @@
+swagger: '2.0'
+info:
+  title: 'API Racconti'
+  description: 'Organizzazione Collana Racconti'
+  version: 1.0.0
+definitions:
+  
+  Uscita:
+    type: object
+    required:
+      - id
+      - prezzo
+    properties:
+      id:
+        type: string
+        description: 'id numerico (anno-mese)'
+      prezzo:
+        type: integer
+        description: 'Prezzo dell uscita'
+
+  Racconto:
+    type: object
+    required:
+      - id
+      - titolo
+      - lunghezza
+    properties:
+      id:
+        type: integer
+        description: 'Id del racconto'
+      titolo:
+        type: string
+        description: 'Titolo del racconto'
+      lunghezza:
+        type: integer
+        description: 'lunghezza del racconto in pagine'
+
+  Collana:
+    type: object
+    required:
+      - uscita
+      - racconto
+    properties:
+      uscita:
+        $ref: '#/definitions/Uscita'
+      racconto:
+        type: array
+        items: 
+          $ref: '#/definitions/Racconto'    # ✅ CORRETTO (era Collana!)
+
+paths:
+  /uscite/{idUscita}/racconti:
+    get:
+      summary: 'elenca tutti i racconti in una data uscita con almeno X pagine'
+      operationId: 'listaRacconti'
+      parameters:
+        - name: idUscita
+          in: path
+          description: 'id dell uscita'
+          required: true
+          type: string
+        
+        - name: numPagine
+          in: query
+          description: 'numero minimo pagine'
+          required: true
+          type: integer
+      
+      responses:
+        '200':
+          description: 'successo'
+          schema:
+            $ref: '#/definitions/Collana'   
+          examples:
+            application/json:
+              uscita:
+                id: '2024-01'
+                prezzo: 599
+              racconto:
+                - id: 3
+                  titolo: 'Sposi'
+                  lunghezza: 2222              
+                - id: 4
+                  titolo: 'Guerra'
+                  lunghezza: 45                
+        '400':
+          description: 'errore'
+
+  /uscite/{idUscita}/racconti/{idRacconto}:
+    patch:
+      summary: 'aggiorna il numero di pagine di un racconto'
+      operationId: 'aggiornaNumPagine'
+      parameters:
+        - name: idUscita
+          in: path
+          description: 'id dell uscita'
+          required: true
+          type: string
+
+        - name: idRacconto
+          in: path
+          description: 'id del racconto num progressivo'
+          required: true
+          type: integer
+
+        - name: body
+          in: body
+          description: 'Nuovo numero di pagine'
+          required: true
+          schema:
+            type: object
+            required:
+              - pagine
+            properties:
+              pagine:
+                type: integer
+                description: 'nuovo numero di pagine'
+      
+      responses:
+        '200':
+          description: 'successo'
+          schema:  
+            $ref: '#/definitions/Racconto'
+          examples:
+            application/json:
+              id: 2
+              titolo: 'Sposi'
+              lunghezza: 22
+        '400':
+          description: 'errore'
+          
+  /uscite/{anno}:
+    delete:
+      summary: 'Cancellare tutte le uscite di un determinato anno'
+      operationId: 'cancellaUsciteAnno'
+      parameters:
+        - name: anno
+          in: path
+          description: 'anno dell uscita'
+          required: true
+          type: string
+        
+      responses:
+        '200':
+          description: 'successo'
+          schema:
+            $ref: '#/definitions/Uscita'
+        '400':
+          description: 'errore'
