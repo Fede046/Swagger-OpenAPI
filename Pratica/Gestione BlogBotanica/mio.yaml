@@ -102,12 +102,21 @@ paths:
             required: true
             in: body
             type: string
-            description: ''
+            description: 'Nuovo contenuto dell articolo'
             schema:
               $ref: '#/definitions/Articolo'
         responses:
           '200':
-            description: 'modifica con succe
+            description: 'modifica con successo'
+            schema:
+              $ref: '#/definitions/Articolo'
+            examples:
+              application/json:
+                id: 123
+                dataPubblicazione: '15-12-2002'
+                titolo: 'Fiori Gialli'
+                contenuto: 'Contenuto'
+                categorie: ['fiori','consigli']
           '400':
             description: 'errore'
     
