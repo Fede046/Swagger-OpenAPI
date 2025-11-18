@@ -1,0 +1,113 @@
+swagger: '2.0'
+info:
+  description: 'API gestione di un blog di botanica'
+  title: 'API Blog Botanica'
+  version: 1.0.0
+definitions:
+  Articolo:
+    type: object 
+    required:
+      - id
+      - dataPubblicazione
+      - titolo
+      - contenuto
+      - categorie
+    properties:
+      id:
+        type: integer
+        minimum: 0
+      dataPubblicazione:
+        type: string
+        example: 12-12-2003
+      titolo: 
+        type: string
+        example: 'Garofani'
+      contenuto:
+        type: string
+        example: 'Sono alti'
+      categorie:
+        #può appartenere a una o più categorie questo 
+        #non è un enum pk enum è soltanto una categoria penso
+        type: array
+        items:
+          type: string
+          enum:
+            - 'orto'
+            - 'fiori'
+            - 'consigli'
+            - 'attrezzi'
+            - 'prodotti'
+            - 'news'
+
+paths:
+  /articoli:
+    get:
+      summary: 'ottenere l elenco di tutti gli articoli di una data categoria e pubblicati dopo una certa data' 
+      operationId: 'elencoArticoli'
+      parameters:
+        - name: minData
+          in: query
+          required: true
+          description: 'data minima'
+          type: string
+          example: '12-12-2004'
+        
+        - name: categorie
+          in: query
+          required: true
+          description: 'categorie degli articoli'
+          type: string
+          enum: 
+            - 'orto'
+            - 'fiori'
+            - 'consigli'
+            - 'attrezzi'
+            - 'prodotti'
+            - 'news'
+          example: 'orto'
+      responses:
+        '200': 
+          description: 'successo'
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Articolo'
+        '400':
+          description: 'errore'
+    
+    post:
+      parameters:
+        - name: articolo
+          in: body
+          required: true
+          description: 'aggiungi articolo'
+          type: object
+          schema:
+            $ref: '#/definitions/Articolo'
+      responses:
+        '201':
+          description: 'creato correttmamente'
+        '400':
+          description: 'errore'
+  /articolo/{articoloId}:
+      put:
+        parameters:
+          - name: articoloId
+            required: true
+            in: path
+            type: integer
+            description: 'id dell articolo da aggiornare'
+            
+          - name: contenuto
+            required: true
+            in: body
+            type: string
+            description: ''
+            schema:
+              $ref: '#/definitions/Articolo'
+        responses:
+          '200':
+            description: 'modifica con succe
+          '400':
+            description: 'errore'
+    
