@@ -1,0 +1,70 @@
+swagger: '2.0'
+info:
+  title: 'API chat'
+  description: 'API per la gestione di una chat'
+  variosn: 1.0.0
+definitions:
+
+  Messaggio:
+    type: object
+    required:
+      - id 
+      - data
+      - autore
+      - testo
+    properties:
+      id:
+        type: string
+        description: 'id del messaggio'
+      data:
+        type: string
+        description: 'data del messaggio'
+        example: '12-12-2004'  
+      autore:
+        type: string
+        description: 'autore del messaggio'
+      testo:
+        type: string
+        description: 'testo del messaggio'
+
+  Stanza:
+    type: object
+    required:
+      - id
+      - data
+      - messaggi
+    properties:
+      id:
+        type: string
+        description: 'id della stanza'
+      data:
+        type: string
+        example: '12-12-2004'
+        description: 'data della stanza'
+      messaggi:
+        type: array
+        items:
+          $ref = '#/definitions/Messaggio'
+
+paths:
+  /{idStanza}/messaggi/{autore}:
+    delete:
+      summary: 'cancellare i messaggi descritti da un autore'
+      operationId: 'cancellaMessaggi'
+      parameters:
+        - name: idStanza
+          in: path
+          required: true
+          type: string
+          description: 'id della stanza'
+        
+        - name: autore
+          in: path
+          type: string
+          required: true
+          description: 'id del messaggio'
+
+      responses
+
+
+           
