@@ -2,8 +2,18 @@ swagger: '2.0'
 info:
   title: 'API chat'
   description: 'API per la gestione di una chat'
-  variosn: 1.0.0
+  version: 1.0.0
 definitions:
+
+  ModificaMessaggio:
+    type: object
+    required:
+      - data
+    properties:
+      data:
+        type: string
+        description: 'data aggiornata'
+        example: '01-11-2004'
 
   Messaggio:
     type: object
@@ -44,12 +54,12 @@ definitions:
       messaggi:
         type: array
         items:
-          $ref = '#/definitions/Messaggio'
+          $ref: '#/definitions/Messaggio'
 
 paths:
   /{idStanza}/messaggi/{autore}:
     delete:
-      summary: 'cancellare i messaggi descritti da un autore'
+      summary: 'cancellare i messaggi scritti da un autore'
       operationId: 'cancellaMessaggi'
       parameters:
         - name: idStanza
@@ -62,9 +72,70 @@ paths:
           in: path
           type: string
           required: true
-          description: 'id del messaggio'
+          description: 'nome autore'
 
-      responses
+      responses:
+        '200':
+          description: 'cancellati con successo'
+          schema: #bastava anche solo la parte schema ref
+            type: array
+            items:
+              $ref: '#/definitions/Messaggio'
+        '400':
+          description: 'errore'
+  /{idStanza}/messaggio:
+    post:
+      summary: 'aggiungo un nuovo messaggio a una stanza'
+      operationId: 'addMessaggio'
+      parameters:
+        - name: messaggio
+          in: body
+          required: true
+          schema:
+            $ref:  '#/definitions/Messaggio'
+          description: 'messaggio da aggiungere'
+        - name: idStanza
+          in: path
+          required: true
+          type: string
+          description: 'id della stanza'
+
+      responses:
+        '201':
+          description: 'messaggio aggiunto correttamente'
+          schema:
+            $ref: '#/definitions/Messaggio'
+        '400':
+          description: 'errore'
+
+  /{idStanza}/{idMessaggio}:
+    put:
+      summary: 'modifico la data di pubblicazione di un messaggio'
+      operationId: 'modificaMessaggio'
+      parameters:
+        - name: idStanza
+          in: path
+          required: true
+          type: string
+          description: 'id della stanza'
+        - name: idMessaggio
+          in: path
+          required: true
+          type: string
+          description: 'id del messaggio'
+        - name: body   
+          in: body     # quando in= body non ci vuole type solo schema
+          required: true
+          description: 'modifica del messaggio'
+          schema:
+            $ref: '#/definitions/ModificaMessaggio'
+      responses:
+        '200':
+          description: 'modifica corretta'
+          schema:
+            $ref: '#/definitions/ModificaMessaggio'
+        '400':
+          description: 'errore'
 
 
            
