@@ -1,0 +1,155 @@
+swagger: '2.0'
+info:
+  title: 'API prenotazioni'
+  derscription:  'Api per la gestione delle prenotazioni'
+  version: 1.0.0
+definitions:
+  NumeroPosti:
+    type: object   #deve essere object per contenere properties
+    required:
+      - numeroPosti
+    properties:
+      numeroPosti:
+        type: integer
+
+  Pronotazione:
+    type: object
+    required:
+      - id
+      - data
+      - nome
+      - numeroPosti
+    properties:
+      id:
+        type: integer
+        description: 'id della prenotazione'
+        example: 13
+      data:
+        type: string
+        description: 'data della creazione'
+        example: '13-12-2004'
+      nome:
+        type: string
+        description: 'nome del partecipante'
+        example: 'Matteo'
+      numeroPosti:
+        type: integer
+        description: 'numero posti richiesti'
+        example: 3
+        minimum: 1
+  
+  Evento:
+    type: object
+    required:
+      - id
+      - titolo
+      - data
+      - capienza
+      - prenotazioni
+    properties:
+      id:
+        type: integer
+        description: 'id dell evento'
+        example: 1
+      titolo:
+        type: string
+        description: 'titolo dell evento'
+        example: 'Campagna'
+      data:
+        type: string
+        description: 'data di svolgimento'
+        example: '12-12-2004'
+      capienza:
+        type: integer
+        description: 'capienza massima'
+        example: 50
+      prenotazioni:
+        type: array
+        items:
+          $ref: '#/definitions/Prenotazione'
+paths:
+
+  eventi/{idEvento}/prenotazioni:
+    get:
+      summary: "Ottenere l'elenco di tutte le prenotazioni effettuate da un partecipante (dato il nome) per un determinato evento"
+      operationId: 'ottieniElenco'
+      parameters:
+         - name: idEvento
+           required: true
+           in: path
+           type: integer
+           description: 'id dell evento'
+         - name: nomePartecipante
+           required: true
+           in: query
+           # Path -> rappresentano o identificano identificatori univoci nella gerarchia
+           # Query -> rappresentano filtri o opzioni/criteri di ricerca
+           type: string
+           description: 'nome partecipante'
+      responses:
+        '200':
+          description: 'elenco corretto'
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Prenotazione'
+        '400':
+          description: 'errore'
+  
+    post:
+      summary: 'Aggiungere una nuova prenotazione ad un evento esistente'
+      operationId: 'aggiungiPrenotazione'
+      parameters:
+        - name: idEvento
+          required: true
+          in: path
+          type: integer
+          description: 'id dell evento'
+        - name: body
+          required: true
+          in: body
+          description: 'prenotazione'
+          schema:
+            $ref: '#/definitions/Prenotazione'
+      responses:
+        '201': 
+          description: 'creato correttamente'
+          schema:
+            $ref: '#/definitions/Prenotazione'
+          examples:
+            application/json:
+              id: 3
+              data: '21-11-2005'
+              nome: 'Mirco'
+              numeroPosti: 2
+        '400':
+          description: 'errore'
+  /eventi/{idEvento}/prenotazioni/{idPrenotazione}:
+    patch:
+      summary: 'Modificare il numero di posti richiesti in una prenotazione esistente'
+      operationId: 'modifica'
+      parameters:
+        - name: idEvento
+          required: true
+          in: path
+          type: integer
+          description: 'id dell evento'
+        - name: idPrenotazione
+          required: true
+          in: path
+          type: integer
+          description: 'id prenotazione'
+        - name: numPosti
+          required: true
+          in: body
+          description: 'nuovo numero di posti'
+          schema: 
+            $ref: '#/definitions/NumeroPosti'
+      responses:
+        '200':
+          description: 'modificato correttamente'
+          schema:
+            $ref: '#/definitions/Prenotazione'
+        '400':
+          description: 'errore'
+  

@@ -18,7 +18,7 @@ definitions:
         minimum: 0
       dataPubblicazione:
         type: string
-        example: 12-12-2003
+        example: '22-12-2003'
       titolo: 
         type: string
         example: 'Garofani'
@@ -50,12 +50,12 @@ paths:
           required: true
           description: 'data minima'
           type: string
-          example: '12-12-2004'
+         
         
-        - name: categorie
+        - name: categoria
           in: query
           required: true
-          description: 'categorie degli articoli'
+          description: 'categoria degli articoli'
           type: string
           enum: 
             - 'orto'
@@ -64,7 +64,7 @@ paths:
             - 'attrezzi'
             - 'prodotti'
             - 'news'
-          example: 'orto'
+          
       responses:
         '200': 
           description: 'successo'
@@ -76,21 +76,26 @@ paths:
           description: 'errore'
     
     post:
+      summary: 'Aggiungere un nuovo articolo'
+      operationId: 'aggiungiArticolo'
       parameters:
         - name: articolo
           in: body
           required: true
           description: 'aggiungi articolo'
-          type: object
           schema:
             $ref: '#/definitions/Articolo'
       responses:
         '201':
           description: 'creato correttmamente'
+          schema:
+             $ref: '#/definitions/Articolo'
         '400':
           description: 'errore'
-  /articolo/{articoloId}:
+  /articoli/{articoloId}:
       put:
+        summary: 'Modificare il contenuto di un articolo'
+        operationId: 'modificaArticolo'
         parameters:
           - name: articoloId
             required: true
@@ -98,13 +103,18 @@ paths:
             type: integer
             description: 'id dell articolo da aggiornare'
             
-          - name: contenuto
+          - name: body
             required: true
             in: body
-            type: string
             description: 'Nuovo contenuto dell articolo'
             schema:
-              $ref: '#/definitions/Articolo'
+              type: object  # ERRORE: stai passando solo il contenuto, non l'intero Articolo (questo è corretto)
+              required:
+                - contenuto
+              properties:
+                contenuto:
+                  type: string
+                  example: 'Nuovo contenuto aggiornato'
         responses:
           '200':
             description: 'modifica con successo'
