@@ -1,0 +1,5 @@
+swagger: '2.0'
+info:
+  description: 'API gestione ristorante e menù'
+  title: 'Esercizio ristoranti'
+  version: 1.0.0

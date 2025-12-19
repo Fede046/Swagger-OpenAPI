@@ -1,0 +1,123 @@
+swagger: '2.0'
+info:
+  title: 'API racconti'
+  description: 'API per la gestione di collana di racconti'
+  version: 1.0.0
+
+definitions:
+
+  AggiornaPagine:
+    type: object
+    required:
+      - nuovePagine
+    properties:
+      nuovePagine:
+        type: integer
+        example: 1100
+
+  Collana:
+    type: object
+    required:
+      - uscita
+      - racconti
+    properties:
+      uscita:
+        type: object
+        schema:
+          $ref: '#/definitions/Uscita'
+      racconti:
+        type: array
+        items: 
+          $ref: '#/definitions/Racconto'
+
+  Uscita:
+    type: object
+    required:
+      - data
+      - prezzo
+    properties:
+      data: 
+        type: string
+        example: '2004-12'
+      prezzo:
+        type: integer
+
+  Racconto:
+    type: object
+    required:
+      - id
+      - titolo
+      - lunghezza
+    properties:
+      id: 
+        type: integer
+        minimum: 0
+      titolo:
+        type: string
+        example: 'Guerra 2'
+      lunghezza:
+        type: integer
+        example: 100
+
+paths:
+  /uscite/{dataUscita}/racconti/:
+    get:
+      summary: 'elencare tutte i racconti in una data uscita e con almeno X pagine'
+      operationId: 'elencoRacc'
+      parameters:
+        - name: dataUscita
+          in: path
+          required: true
+          type: string
+          example: '2004-12'
+          description: 'data uscita'
+        - name:  pagine
+          in: query
+          required: true
+          type: integer
+          example: 231
+          description: 'minimo pagine'
+      responses:
+        '200':
+          description: 'successo'
+          schema: 
+            type: array 
+            items:
+              $ref: '#/definitions/Racconto'
+        '400':
+          description: 'errore'
+  /racconti/{idRacconto}:
+    patch:
+      summary: 'aggiornare il numero di pagine di un racconto'
+      operationId: 'updateRac'
+      parameters:
+        - name: idRacconto
+          required: true
+          in: path
+          type: integer
+          example: 1
+        - name: newPag
+          path: body
+          required: true
+          schema:
+            $ref: '#/definitions/AggiornaPagine'
+      responses:
+        '200':
+          description: 'successo'
+          schema: 
+            $ref: '#/definitions/Racconto'
+        '400':
+          description: 'errore'
+  /uscite/{dataUscite}:
+    delete:
+      summary: 'cancellare tutte le uscite di un determinato anno'
+      operationId: 'delUs'
+      parameters:
+        - name: dataUscite
+          required: true
+          in: path
+          type: integer
+          example: 1
+          
+
+      
