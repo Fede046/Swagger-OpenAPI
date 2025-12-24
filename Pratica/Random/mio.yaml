@@ -1,0 +1,127 @@
+swagger: '2.0'
+info:
+  description: 'API gestione racconti'
+  title: 'API racconti'
+  version: 1.0.0
+ 
+definitions:
+  Uscita:
+    type: object
+    required:
+      - id
+      - price
+    properties:
+      id:
+        type: integer
+        example: 1207
+      price:
+        type: integer
+        
+  Racconto:
+    type: object
+    required:
+      - id
+      - titolo
+      - lunghezza
+    properties:
+      id:
+        type: integer
+        minimum: 1
+      titolo:
+        type: string
+        example: 'Guerra2'
+      lunghezza:
+        type: integer
+        example: 123
+
+paths:
+    /uscite/{uscitaId}/racconti/{numPag}:
+      get:
+        summary: 'ritorna racconti'
+        operationId: 'getRacc'
+        parameters:
+          - name: uscitaId
+            in: path
+            description: 'id della uscita'
+            required: true
+            type: integer
+          - name: numPag
+            in: query
+            description: 'numero di pagine'
+            required: true
+            type: integer
+        responses:
+          '200':
+             description: 'successo'
+             schema:
+               type: array
+               items:
+                 $ref: '#/definitions/Racconto'
+             example:
+               application/json:
+                 - id: 1
+                   titolo: 'Guerra2'
+                   lunghezza: 231
+                 - id: 2
+                   titolo: 'Guerra21'
+                   lunghezza: 2313
+           '400':
+              description: 'errore'
+
+    /uscite/{uscitaId}/racconti/{raccontoId}:
+      put:
+        summary: 'modifica pagine racconto'
+        operationId: 'modRac'
+        parameters:
+          - name: uscitaId
+            in: path
+            description: 'id della uscita'
+            required: true
+            type: integer
+          - name: raccontoId
+            in: path
+            description: 'id del racconto'
+            required: true
+            type: integer
+          - name: nuovoRacc
+            in: body
+            description: 'nuovo numero pag racconto'
+            required: true
+            schema:
+              type: object
+              properties:
+                lunghezza:
+                  type: integr
+        responses:
+          '200':
+             description: 'successo'
+             schema:
+               $ref: '#/definitions/Racconto'
+             example:
+               application/json:
+                   id: 1
+                   titolo: 'Guerra2'
+                   lunghezza: 231
+           '400':
+              description: 'errore'               
+
+
+    /uscite/{annoUscita}/:
+      delete:
+        summary: 'cancella uscite'
+        operationId: 'delUsc'
+        parameters:
+          - name: annoUscita
+            in: path
+            description: 'anno della uscita'
+            required: true
+            type: integer
+        responses:
+          '200':
+             description: 'successo'
+           '400':
+              description: 'errore'
+      
+         
+        
+          

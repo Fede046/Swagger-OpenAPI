@@ -1,0 +1,106 @@
+swagger: '2.0'
+info:
+  description: ' API REST (parziale) per gestire un insieme di laboratori informatici'
+  title: 'Esercizio laboratori'
+  version: 1.0.0
+
+definitions:
+  Laboratorio:
+    type: object
+    required:
+      - nome
+      - computers
+    properties:
+      nome:
+        type: string
+        example: 'Ercolani'
+      computers:
+        type: array
+        items:
+          $ref: "#/definitions/Computer"
+   Computer:
+    type: object
+    required:
+      - id
+      - processore
+      - RAM
+      - SO
+    properties:
+      id:
+        type: string
+      processore:
+        type: string
+      RAM:
+        type: integer
+      SO:
+        type: string
+        enum:
+          - Windows
+          - Linux
+          - MacOS
+          
+paths:
+  /laboratori/{labName}/computers/{SO}:
+    delete:
+      summary: 'cancellare tutti i computer X'
+      operationId: 'togliComputer'
+      parameters:
+      - name: labName
+        in: path
+        description: "nome del lab"
+        required: true
+        type: string
+      - name: SO
+        in: query
+        description: 'tipo di SO'
+        required: true
+      responses:
+        '200':
+          description: 'successo'
+        '400':
+          description: 'ID non valido'
+
+  /laboratori/:
+    post:
+      summary: 'Aggiunge laboratorio'
+      operationId: 'aggiungiLab'
+      parameters:
+      - name: lab
+        in: body
+        description: 'Piatto da aggiungere'
+        required: true
+        schema:
+            $ref: '#/definitions/Laboratorio'
+      responses:
+        '200':
+          description: 'successo'
+        '400':
+          description: 'ID non valido'
+ 
+  /laboratori/{labName}/computers/{pcId}/:
+    put:
+      summary: "Modifica il numero minimo e il numero massimo di giocatori in un gioco"
+      operationId: "editGame"
+      parameters:
+        - in: path
+          name: "labName"
+          description: "nome del laboratorio"
+          required: true
+          type: string
+        - in: path
+          name: "pcId"
+          description: "id del pc"
+          required: true
+          type: string
+        - in: body
+          name: "RAM update"
+          description: "Oggetto gioco con informazione aggiornata"
+          required: true
+          schema:
+            $ref: "#/definitions/Gioco"
+      responses:
+        "200":
+          description: "Successo"
+        "400":
+          description: "Input non valido"
+          

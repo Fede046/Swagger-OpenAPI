@@ -1,0 +1,120 @@
+swagger: '2.0'
+info:
+  description: 'API gestione prenotazioni eventi'
+  title: 'Esercizio prenotazione eventi'
+  version: 1.0.0
+
+definitions:
+  Evento:
+    type: object
+    required:
+      - id
+      - titolo
+      - data
+      - capienza
+    properties:
+      id:
+        type: integer
+      titolo:
+        type: string
+        example: 'Sagra del formaggio'
+      data:
+        type: string
+        example: '12-12-2003'
+      capienza:
+        type: integer
+      
+  Prenotazione:
+    type: object
+    required:
+      - id
+      - data
+      - nome
+      - numero
+    properties:
+      id:
+        type: integer
+      data:
+        type: string
+        example: '12-02-2003'
+      nome:
+        type: string
+        example: 'Antonio'
+      numero:
+        type: integer
+
+paths:
+  /eventi/{idEvento}/prenotazioni/{nomePartecipante}:
+    get:
+      summary: 'Ottenere l elenco di tutte le prenotazioni effettuate da un partecipante (dato il nome) per un determinato evento'
+      operationId: 'getPreNome'
+      parameters:
+        - name: idEvento
+          required: true
+          description: 'id evento'
+          type: integer
+          in: path
+        
+        - name: nomePartecipante
+          required: true
+          description: 'nome partecipante'
+          type: string
+          in: query
+        
+      responses:
+        '200':
+          description: 'successo'
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Prenotazione'
+        '400':
+          description: 'errore'
+
+  /eventi/{idEvento}/prenotazioni/:
+    post:
+      summery: 'Aggiungere una nuova prenotazione ad un evento esistente'
+      operationId: 'putPre'
+      prameters:
+        - name: idEvento
+          required: true
+          description: 'id evento'
+          type: integer
+          in: path
+        
+        - name: prenotazione
+          required: true
+          description: 'Prenotazione da aggiungere'
+          in: body
+          schema:
+            $ref: '#/definitions/Prenotazione'
+      responses:
+        '200':
+          description: 'successo'
+        '400':
+          description: 'ID non valido'
+
+    put:
+      summary: 'Modificare il numero di posti richiesti in una prenotazione esistente'
+      operationId: 'modPre'
+      parameters:
+        - name: idEvento
+          required: true
+          description: 'id evento'
+          type: integer
+          in: path
+        
+        - name: updatePre
+          in: body
+          description: 'Oggetto prenotazione con numero posti aggiornato'
+          required: true
+          schema:
+            $ref: '#/definitions/Prenotazione'
+      
+      responses: 
+        "200":
+          description: "Successo"
+        "400":
+          description: "Input non valido"
+
+      

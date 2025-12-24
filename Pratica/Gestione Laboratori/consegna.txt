@@ -1,0 +1,19 @@
+Esercizio 3
+Progettare un API REST (parziale) per gestire un insieme di laboratori informatici.
+Ogni laboratorio è identificato da un nome (stringa) ed ospita diversi computer. Ogni computer è
+identificato da un codice (per semplicità stringa). Per ogni computer si memorizza il processore
+(stringa per semplicità) e la RAM in Gb (intero). Inoltre, su ogni computer è installato un sistema
+operativo tra Windows, Linux o MacOS. Per semplicità si può installare un solo sistema
+operativo su un computer.
+Scrivere un file in formato JSON o YAML.
+L’API permette di:
+1. cancellare tutti i computer di un dato laboratorio X su sui è installato il sistema
+operativo Y
+2. aggiungere un laboratorio, inizialmente vuoto
+3. aggiornare la RAM di un dato computer
+Scrivere un file in formato JSON o YAML.
+Specificare: URL di accesso, metodi HTTP, parametri e risposte con esempi.
+L’API restituisce un errore, con codice 400, se i parametri in input non sono corretti.
+Note:
+● Non è richiesto includere le sezioni host, schemes, servers, tags
+● Non è richiesto gestire autenticazione

@@ -1,7 +1,7 @@
 swagger: '2.0'
 info:
   title: 'API prenotazioni'
-  derscription:  'Api per la gestione delle prenotazioni'
+  description:  'Api per la gestione delle prenotazioni'
   version: 1.0.0
 definitions:
   NumeroPosti:
@@ -12,7 +12,7 @@ definitions:
       numeroPosti:
         type: integer
 
-  Pronotazione:
+  Prenotazione:
     type: object
     required:
       - id
@@ -69,7 +69,7 @@ definitions:
           $ref: '#/definitions/Prenotazione'
 paths:
 
-  eventi/{idEvento}/prenotazioni:
+  /eventi/{idEvento}/prenotazioni:
     get:
       summary: "Ottenere l'elenco di tutte le prenotazioni effettuate da un partecipante (dato il nome) per un determinato evento"
       operationId: 'ottieniElenco'
