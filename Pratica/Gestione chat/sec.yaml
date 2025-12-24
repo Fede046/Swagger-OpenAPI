@@ -1,0 +1,135 @@
+swagger: '2.0'
+info:
+  title: 'API chat'
+  description: 'API per la gestione della chat'
+  version: 1.0.0
+description:
+
+  ModificaMessaggio:
+    type: object
+    required:
+      - data
+    properties:
+      data:
+        type: string
+        description: 'data aggiornata'
+        example: '12-12-2033'
+
+  Stanza:
+    type: object
+  required:
+    - id
+    - data
+    - messaggi
+  propreties:
+    id:
+      type: string
+      description: 'id della stanza'
+    data:
+      type: string
+      description: 'data della stanza'
+      example: '12-12-2003'
+    messaggi:
+      type: array
+      items:
+        $ref: '#/definitions/Messaggio'
+
+  Messaggio:
+    type: object
+    required:
+      - id
+      - data
+      - autore
+      - testo
+    properties:
+      id:
+        type: string
+        description: 'id del messaggio'
+      data:
+        type: string
+        description: 'data del messaggio'
+        example: '12-12-2005'
+      autore: 
+        type: string
+        description: 'autore del messaggio'
+      testo:
+        type: string
+        description: 'testo del messaggio'
+
+paths:
+  /{idStanza}/messaggi/{autore}:
+  delete: 
+    summary: 'cancellare tutti i messaggi di una stanza dato un autore'
+    operationId: 'cancellareMessaggi'
+    parameters:
+      - name: idStanza
+        in: path
+        required: true
+        type: string
+        description: 'id della stanza'
+      
+      - name: autore 
+        in: path
+        required: true
+        type: string
+        description: 'id dell autore'
+    
+    responses:
+      '200':
+        description: 'successo'
+        schema:
+          type: array
+          items:
+            $ref: '#/definitions/Messaggio'
+      '400':
+        description: 'errore'
+  /{idStanza}/messaggio:
+    post: 
+      summary: 'aggiungo un messaggio a una stanza'
+      operationId: 'addMessage'
+      perameters:
+        - name: idStanza
+          in: path
+          required: true
+          description: 'id della stanza'
+
+        - name: messaggio:
+          in: path
+          required: true
+          description: 'messaggio'
+          schema:
+            $ref: '#/definitions/Messaggio'
+    responses:
+      '201':
+        description: 'successo'
+        schema:
+          $ref: '#/definitions/Messaggio'
+      '400':
+        description: 'errore'
+  /{idStanza}/{idMessaggio}:
+    put:
+      summary: 'modifica la data di pubblicazione di un messaggio'
+      operationId: 'modData'
+      parameters:
+        - name: idStanza
+          in: path
+          required: true
+          type: string
+          description: 'id della stanza'
+        - name: idMessaggio
+          in: path
+          required: true
+          type: string
+          description: 'id del messaggio'
+        - name: body
+          in: body
+          description: 'modifica del messaggio'
+          schema: 
+            $ref: '#/definitions/ModificaMessaggio'
+      respones:
+        '201':
+          description: 'corretto'
+          schema:
+            $ref: '#/definitions/ModificaMessaggio'
+        '400':ù
+          description: 'errore'

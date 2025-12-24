@@ -1,0 +1,92 @@
+swagger: '2.0'
+info:
+  title: 'API chat'
+  description: 'API di una gestione di una chat'
+  version: 1.0.0
+description:
+
+
+
+
+  Messaggio:
+    type: object
+    required: 
+      - id 
+      - data
+      - autore
+      - testo
+    properties:
+      id:
+        type: string
+        description: 'id del messaggio'
+      data:
+        type: string
+        description: 'data del messaggio'
+        example: '21-12-2001'
+      autore:
+        type: string
+        description: 'nome dell autore'
+      testo: 
+        type: string
+        description: 'testo del messaggio'
+
+  Stanza:
+    type: object
+    required: 
+      - id
+      - data
+      - messaggi
+    properties:
+      id: 
+        type: string
+        description: 'id della stanza'
+      data:
+        type: string
+        desctription: 'data della stanza'
+        example: '12-12-2002'
+      messaggi:
+        type: array
+        schema:
+          items:
+            $ref: '#/definitions/Messaggio'
+
+paths:
+  /{idStanza}/messaggi/{autore}:
+    delete:
+      summary: 'cancella i messaggio di un autore'
+      operationId: 'cancellaMg'
+      parameters:
+        - name: idStanza
+          type: string
+          in: path
+          required: true
+          description: 'id della stanza'
+        
+        - name: autore
+          type: string
+          in: path
+          required: true
+          description: 'nome dell autore'
+      responses:
+        '200':
+          description: 'corretto'
+          type: array
+          schama:
+            items:
+              $ref: '#/definitions/Messaggio'
+        '400':
+          description: 'errore'
+  /{idStanza}/messaggio:
+    post:
+      summary: 'aggiunge un messaggio'
+      operationId: 'addMg'
+      parameters:
+        - name: idStanza
+          type: string
+          in: path
+          required: true
+        
+        - name: messaggio
+          type: string
+          in: path
+          required: true
